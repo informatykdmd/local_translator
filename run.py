@@ -121,7 +121,11 @@ async def _worker_loop(worker_id: int):
             async with sem:
                 translated = await _call_libretranslate(text, source, target, fmt)
 
-            await _db_put(cache_key=cache_key, translated=translated)
+            try:
+                await _db_put(cache_key=cache_key, translated=translated)
+            except Exception:
+                pass  # cache write failure ≠ failure requestu
+
 
             # spełnij wszystkie oczekujące futures dla tego cache_key
             async with inflight_lock:
@@ -178,7 +182,11 @@ async def translate(inp: TranslateIn):
     ck = _cache_key(text, source, target, fmt)
 
     # 1) cache hit
-    cached = await _db_get(ck)
+    try:
+        cached = await _db_get(ck)
+    except Exception as e:
+        cached = None  # cache padł → lecimy bez cache
+
     if cached is not None:
         return TranslateOut(text=cached, cached=True, cache_key=ck, ms=int((time.time() - t0) * 1000))
 
