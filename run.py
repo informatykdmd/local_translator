@@ -217,3 +217,7 @@ async def translate_batch(inp: BatchIn):
         res = await translate(TranslateIn(text=t, source=inp.source, target=inp.target, format=inp.format))
         out.append(res.text)
     return {"texts": out}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=5055)
