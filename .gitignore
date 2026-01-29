@@ -1,0 +1,7 @@
+# Ignoruj plik /bin/config_utils.py
+/bin/config_utils.py
+/logs/errors.log
+/logs/logsForAifa.json
+temp.py
+gunicorn_config.py
+sqlQueries.sql
